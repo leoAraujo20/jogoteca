@@ -6,14 +6,34 @@ authors = [
     {name = "Leônidas Araújo",email = "leonidasaraujomqm@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<4.0"
 dependencies = [
+    "flask (>=3.1.2,<4.0.0)"
 ]
 
 [tool.poetry]
 packages = [{include = "jogoteca", from = "src"}]
 
 
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.12.10"
+taskipy = "^1.14.1"
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 79
+[tool.ruff.lint]
+preview = true
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+[tool.ruff.format]
+preview = true
+quote-style = 'single'
+
+[tool.taskipy.tasks]
+lint = 'ruff check'
+pre_format = 'ruff check --fix'
+format = 'ruff format'
+run = 'flask --app src/main.py run'
