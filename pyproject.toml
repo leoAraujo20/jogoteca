@@ -1,0 +1,19 @@
+[project]
+name = "jogoteca"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Leônidas Araújo",email = "leonidasaraujomqm@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+]
+
+[tool.poetry]
+packages = [{include = "jogoteca", from = "src"}]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
