@@ -1,6 +1,7 @@
-from flask import Flask, redirect, render_template, request
+from flask import Flask, flash, redirect, render_template, request, session
 
 app = Flask(__name__)
+app.secret_key = 'jogoteca'
 
 
 class Game:
@@ -22,7 +23,9 @@ def home():
 
 
 @app.route('/novo-jogo', methods=['GET'])
-def create():
+def new_game():
+    if 'usuario_logado' not in session or session['usuario_logado'] is None:
+        return redirect('/login?next-page=/novo-jogo')
     return render_template('form.html', title='Cadastrar Jogo')
 
 
@@ -34,6 +37,29 @@ def create_game():
     novo_jogo = Game(nome, categoria, console)
     game_list.append(novo_jogo)
     return redirect('/')
+
+
+@app.route('/login')
+def login():
+    return render_template('login.html', title='Login')
+
+
+@app.route('/autenticar', methods=['POST'])
+def authenticate():
+    if 'secret' == request.form['senha']:
+        session['usuario_logado'] = request.form['usuario']
+        flash(f'Usuário {session["usuario_logado"]} logado com sucesso!')
+        return redirect('/')
+    else:
+        flash('Usuário ou senha inválidos.')
+        return redirect('/login')
+
+
+@app.route('/logout')
+def logout():
+    session.pop('usuario_logado', None)
+    flash('Usuário deslogado com sucesso!')
+    return redirect('/login')
 
 
 app.run(debug=True)

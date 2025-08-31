@@ -1,0 +1,22 @@
+{% extends 'base.html' %} {% block content %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-info" role="alert">
+    {% for message in messages %}
+        {{ message }}
+    {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+<form method="POST" action="/autenticar">
+  <p>
+    <label>Nome de usuário:</label>
+    <input class="form-control" type="text" name="usuario" required />
+  </p>
+  <p>
+    <label>Senha:</label>
+    <input class="form-control" type="password" name="senha" required />
+  </p>
+  <p><button class="btn btn-primary" type="submit">Entrar</button></p>
+</form>
+{% endblock %}
