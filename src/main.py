@@ -48,8 +48,9 @@ def login():
 def authenticate():
     if 'secret' == request.form['senha']:
         session['usuario_logado'] = request.form['usuario']
+        next_page = request.form.get('next-page')
         flash(f'Usuário {session["usuario_logado"]} logado com sucesso!')
-        return redirect('/')
+        return redirect(next_page)
     else:
         flash('Usuário ou senha inválidos.')
         return redirect('/login')
