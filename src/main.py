@@ -19,6 +19,22 @@ class Game:
         self.console = console
 
 
+class User:
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+
+user1 = User('leonidas', 'secret')
+user2 = User('joseph', 'password')
+user3 = User('maria', '123456')
+users_dict = {
+    user1.username: user1,
+    user2.username: user2,
+    user3.username: user3
+}
+
+
 game1 = Game('God of War', 'Ação', 'PlayStation')
 game2 = Game('Skyrim', 'RPG', 'PC')
 game3 = Game('Valorant', 'Tiro', 'PC')
@@ -54,14 +70,15 @@ def login():
 
 @app.route('/autenticar', methods=['POST'])
 def authenticate():
-    if 'secret' == request.form['senha']:
-        session['usuario_logado'] = request.form['usuario']
-        next_page = request.form.get('next-page')
-        flash(f'Usuário {session["usuario_logado"]} logado com sucesso!')
-        return redirect(next_page)
-    else:
-        flash('Usuário ou senha inválidos.')
-        return redirect(url_for('login'))
+    if request.form['user'] in users_dict:
+        user = users_dict[request.form['user']]
+        if user.password == request.form['password']:
+            session['usuario_logado'] = user.username
+            next_page = request.form.get('next-page')
+            flash(f'Usuário {session["usuario_logado"]} logado com sucesso!')
+            return redirect(next_page)
+    flash('Usuário ou senha inválidos.')
+    return redirect(url_for('login'))
 
 
 @app.route('/logout')
