@@ -8,7 +8,7 @@
     </div>
   {% endif %}
 {% endwith %}
-<form method="POST" action="/autenticar">
+<form method="POST" action="{{url_for('authenticate')}}">
   <input type="hidden" name="next-page" value="{{ next_page or '/' }}">
   <p>
     <label>Nome de usuário:</label>

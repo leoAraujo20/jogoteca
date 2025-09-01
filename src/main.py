@@ -1,4 +1,12 @@
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import (
+    Flask,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
 app = Flask(__name__)
 app.secret_key = 'jogoteca'
@@ -36,7 +44,7 @@ def create_game():
     console = request.form['console']
     novo_jogo = Game(nome, categoria, console)
     game_list.append(novo_jogo)
-    return redirect('/')
+    return redirect(url_for('home'))
 
 
 @app.route('/login')
@@ -53,14 +61,14 @@ def authenticate():
         return redirect(next_page)
     else:
         flash('Usuário ou senha inválidos.')
-        return redirect('/login')
+        return redirect(url_for('login'))
 
 
 @app.route('/logout')
 def logout():
     session.pop('usuario_logado', None)
     flash('Usuário deslogado com sucesso!')
-    return redirect('/login')
+    return redirect(url_for('login'))
 
 
 app.run(debug=True)
