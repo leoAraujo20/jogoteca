@@ -1,3 +1,6 @@
+import os
+
+from dotenv import load_dotenv
 from flask import (
     Flask,
     flash,
@@ -7,42 +10,38 @@ from flask import (
     session,
     url_for,
 )
+from flask_sqlalchemy import SQLAlchemy
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'jogoteca'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+db = SQLAlchemy(app)
 
 
-class Game:
-    def __init__(self, name, category, console):
-        self.name = name
-        self.category = category
-        self.console = console
+class Jogos(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    nome = db.Column(db.String(50), nullable=False)
+    categoria = db.Column(db.String(40), nullable=False)
+    console = db.Column(db.String(20), nullable=False)
+
+    def __repr__(self):
+        return f'<Game {self.nome}>'
 
 
-class User:
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
+class Usuarios(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    nome = db.Column(db.String(50), nullable=False)
+    senha = db.Column(db.String(100), nullable=False)
 
-
-user1 = User('leonidas', 'secret')
-user2 = User('joseph', 'password')
-user3 = User('maria', '123456')
-users_dict = {
-    user1.username: user1,
-    user2.username: user2,
-    user3.username: user3
-}
-
-
-game1 = Game('God of War', 'Ação', 'PlayStation')
-game2 = Game('Skyrim', 'RPG', 'PC')
-game3 = Game('Valorant', 'Tiro', 'PC')
-game_list = [game1, game2, game3]
+    def __repr__(self):
+        return f'<User {self.nome}>'
 
 
 @app.route('/')
 def home():
+    game_list = Jogos.query.all()
     return render_template('index.html', title='Jogos', game_list=game_list)
 
 
@@ -70,15 +69,7 @@ def login():
 
 @app.route('/autenticar', methods=['POST'])
 def authenticate():
-    if request.form['user'] in users_dict:
-        user = users_dict[request.form['user']]
-        if user.password == request.form['password']:
-            session['usuario_logado'] = user.username
-            next_page = request.form.get('next-page')
-            flash(f'Usuário {session["usuario_logado"]} logado com sucesso!')
-            return redirect(next_page)
-    flash('Usuário ou senha inválidos.')
-    return redirect(url_for('login'))
+    user_db = Usuarios.query.filter_by(nome=request.form['usuario']).first()
 
 
 @app.route('/logout')
