@@ -54,11 +54,17 @@ def new_game():
 
 @app.route('/cadastrar-jogo', methods=['POST'])
 def create_game():
-    nome = request.form['nome']
-    categoria = request.form['categoria']
+    name = request.form['nome']
+    category = request.form['categoria']
     console = request.form['console']
-    novo_jogo = Game(nome, categoria, console)
-    game_list.append(novo_jogo)
+    game_db = Jogos.query.filter_by(nome=name).first()
+    if game_db:
+        flash('Jogo já cadastrado!')
+        return redirect(url_for('new_game'))
+    new_game = Jogos(nome=name, categoria=category, console=console)
+    db.session.add(new_game)
+    db.session.commit()
+    flash('Jogo cadastrado com sucesso!')
     return redirect(url_for('home'))
 
 
