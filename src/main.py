@@ -32,11 +32,11 @@ class Jogos(db.Model):
 
 class Usuarios(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    nome = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(50), nullable=False)
     senha = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
-        return f'<User {self.nome}>'
+        return f'<User {self.username}>'
 
 
 @app.route('/')
@@ -69,7 +69,14 @@ def login():
 
 @app.route('/autenticar', methods=['POST'])
 def authenticate():
-    user_db = Usuarios.query.filter_by(nome=request.form['usuario']).first()
+    user_db = Usuarios.query.filter_by(username=request.form['user']).first()
+    if user_db and user_db.senha == request.form['password']:
+        session['usuario_logado'] = user_db.username
+        flash(user_db.username + ' logado com sucesso!')
+        next_page = request.form.get('next-page')
+        return redirect(next_page)
+    flash('Usuário ou senha inválidos!')
+    return redirect(url_for('login'))
 
 
 @app.route('/logout')
