@@ -9,7 +9,7 @@
   {% endif %}
 {% endwith %}
 <form method="POST" action="{{url_for('authenticate')}}">
-  <input type="hidden" name="next-page" value="{{ next_page or '/' }}">
+  <input type="hidden" name="next-page" value="{{ next_page or url_for('home') }}" />
   <p>
     <label>Nome de usuário:</label>
     <input class="form-control" type="text" name="user" required />

@@ -65,6 +65,8 @@ def create_game():
 @app.route('/login')
 def login():
     next_page = request.args.get('next-page')
+    print(type(next_page))
+    print(next_page)
     return render_template('login.html', title='Login', next_page=next_page)
 
 
@@ -74,7 +76,7 @@ def authenticate():
     if user_db and user_db.senha == request.form['password']:
         session['usuario_logado'] = user_db.username
         flash(user_db.username + ' logado com sucesso!')
-        next_page = request.form.get('next_page')
+        next_page = request.form['next-page']
         return redirect(next_page)
     flash('Usuário ou senha inválidos!')
     return redirect(url_for('login'))
