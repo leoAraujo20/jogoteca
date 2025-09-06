@@ -17,27 +17,24 @@ def home():
     return render_template('index.html', title='Jogos', game_list=game_list)
 
 
-@app.route('/novo-jogo', methods=['GET'])
+@app.route('/novo-jogo', methods=['GET', 'POST'])
 def new_game():
     if 'usuario_logado' not in session or session['usuario_logado'] is None:
         return redirect('/login?next-page=/novo-jogo')
+    if request.method == 'POST':
+        name = request.form['nome']
+        category = request.form['categoria']
+        console = request.form['console']
+        game_db = Jogos.query.filter_by(nome=name).first()
+        if game_db:
+            flash('Jogo já cadastrado!')
+            return redirect(url_for('new_game'))
+        new_game = Jogos(nome=name, categoria=category, console=console)
+        db.session.add(new_game)
+        db.session.commit()
+        flash('Jogo cadastrado com sucesso!')
+        return redirect(url_for('home'))
     return render_template('form.html', title='Cadastrar Jogo')
-
-
-@app.route('/cadastrar-jogo', methods=['POST'])
-def create_game():
-    name = request.form['nome']
-    category = request.form['categoria']
-    console = request.form['console']
-    game_db = Jogos.query.filter_by(nome=name).first()
-    if game_db:
-        flash('Jogo já cadastrado!')
-        return redirect(url_for('new_game'))
-    new_game = Jogos(nome=name, categoria=category, console=console)
-    db.session.add(new_game)
-    db.session.commit()
-    flash('Jogo cadastrado com sucesso!')
-    return redirect(url_for('home'))
 
 
 @app.route('/atualizar', methods=['GET'])
