@@ -7,7 +7,7 @@ from flask import (
     url_for,
 )
 
-from main import app,db
+from main import app, db
 from models.models import Jogos, Usuarios
 
 
@@ -38,6 +38,13 @@ def create_game():
     db.session.commit()
     flash('Jogo cadastrado com sucesso!')
     return redirect(url_for('home'))
+
+
+@app.route('/atualizar', methods=['GET'])
+def update_game():
+    if 'usuario_logado' not in session or session['usuario_logado'] is None:
+        return redirect('/login?next-page=/atualizar')
+    return render_template('form.html', title='Atualizar Jogo')
 
 
 @app.route('/login')
