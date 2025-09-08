@@ -37,11 +37,21 @@ def new_game():
     return render_template('form.html', title='Cadastrar Jogo')
 
 
-@app.route('/atualizar', methods=['GET'])
-def update_game():
+@app.route('/atualizar/<int:game_id>', methods=['GET', 'POST'])
+def update_game(game_id):
     if 'usuario_logado' not in session or session['usuario_logado'] is None:
-        return redirect('/login?next-page=/atualizar')
-    return render_template('form.html', title='Atualizar Jogo')
+        return redirect(f'/login?next-page=/atualizar/{game_id}')
+    if request.method == 'POST':
+        game = Jogos.query.get(game_id)
+        game.nome = request.form['nome']
+        game.categoria = request.form['categoria']
+        game.console = request.form['console']
+        db.session.commit()
+        db.session.refresh(game)
+        flash('Jogo atualizado com sucesso!')
+        return redirect(url_for('home'))
+    game = Jogos.query.get(game_id)
+    return render_template('form.html', title='Atualizar Jogo', game=game)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -53,10 +63,11 @@ def login():
         if user_db and user_db.senha == request.form['password']:
             session['usuario_logado'] = user_db.username
             flash(user_db.username + ' logado com sucesso!')
-            return redirect(url_for('home'))
+            next_page = request.form.get('next-page')
+            return redirect(next_page)
         flash('Usuário ou senha inválidos!')
-        return redirect(url_for('login'))
-    next_page = request.args.get('next-page', None)
+        return redirect(url_for('home'))
+    next_page = request.args.get('next-page',)
     return render_template('login.html', title='Login', next_page=next_page)
 
 
