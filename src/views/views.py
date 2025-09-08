@@ -13,7 +13,7 @@ from models.models import Jogos, Usuarios
 
 @app.route('/')
 def home():
-    game_list = Jogos.query.all().order_by(Jogos.id)
+    game_list = Jogos.query.order_by(Jogos.id).all()
     return render_template('index.html', title='Jogos', game_list=game_list)
 
 
@@ -52,6 +52,17 @@ def update_game(game_id):
         return redirect(url_for('home'))
     game = Jogos.query.get(game_id)
     return render_template('form.html', title='Atualizar Jogo', game=game)
+
+
+@app.route('/deletar/<int:game_id>')
+def delete_game(game_id):
+    if 'usuario_logado' not in session or session['usuario_logado'] is None:
+        return redirect(f'/login?next-page=/deletar/{game_id}')
+    game = Jogos.query.get(game_id)
+    db.session.delete(game)
+    db.session.commit()
+    flash('Jogo deletado com sucesso!')
+    return redirect(url_for('home'))
 
 
 @app.route('/login', methods=['GET', 'POST'])

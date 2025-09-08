@@ -25,6 +25,7 @@
       <td>{{ game.console }}</td>
       <td>
         <a href="{{ url_for('update_game', game_id=game.id) }}">Editar</a>
+        <a href="{{ url_for('delete_game', game_id=game.id) }}">Excluir</a>
       </td>
     </tr>
     {% endfor %}
