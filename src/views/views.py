@@ -13,7 +13,7 @@ from models.models import Jogos, Usuarios
 
 @app.route('/')
 def home():
-    game_list = Jogos.query.all()
+    game_list = Jogos.query.all().order_by(Jogos.id)
     return render_template('index.html', title='Jogos', game_list=game_list)
 
 
