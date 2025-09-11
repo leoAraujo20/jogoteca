@@ -90,3 +90,8 @@ def logout():
     session.pop('usuario_logado', None)
     flash('Usuário deslogado com sucesso!')
     return redirect(url_for('login'))
+
+
+@app.route('/image/<filename>')
+def image(filename):
+    return app.send_static_file(f'images/{filename}')
