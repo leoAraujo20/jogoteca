@@ -13,8 +13,8 @@
 
 <form method="POST" action={{ url_for('update_game', game_id=game.id) if game else url_for('new_game') }} enctype="multipart/form-data">
   
-  <figure>
-    <img src="{{ url_for('image', filename='capa_padrao.jpg') }}" alt="Imagem da capa do jogo">
+  <figure class="img thumbnail col-md-4">
+    <img class="img-fluid" src="{{ url_for('image', filename='capa_padrao.jpg') }}" alt="Imagem da capa do jogo">
     <figcaption>
       <label class="fileContainer">
         Mudar Capa
