@@ -34,7 +34,7 @@ def new_game():
         db.session.commit()
         file = request.files['imagem']
         if file:
-            file.save(f'src/static/images/{file.filename}')
+            file.save(f'src/static/images/{new_game.id}.jpg')
         flash('Jogo cadastrado com sucesso!')
         return redirect(url_for('home'))
     return render_template('form.html', title='Cadastrar Jogo')
