@@ -7,6 +7,7 @@ from flask import (
     url_for,
 )
 
+from helpers.helpers import remove_image, return_image
 from main import app, db
 from models.models import Jogos, Usuarios
 
@@ -51,10 +52,20 @@ def update_game(game_id):
         game.console = request.form['console']
         db.session.commit()
         db.session.refresh(game)
+        file = request.files['imagem']
+        if file:
+            remove_image(game.id)
+            file.save(f'src/static/images/{game.id}.jpg')
         flash('Jogo atualizado com sucesso!')
         return redirect(url_for('home'))
     game = Jogos.query.get(game_id)
-    return render_template('form.html', title='Atualizar Jogo', game=game)
+    game_cover = return_image(game.id)
+    return render_template(
+        'form.html',
+        title='Atualizar Jogo',
+        game=game,
+        game_cover=game_cover,
+    )
 
 
 @app.route('/deletar/<int:game_id>')
@@ -81,7 +92,9 @@ def login():
             return redirect(next_page)
         flash('Usuário ou senha inválidos!')
         return redirect(url_for('home'))
-    next_page = request.args.get('next-page',)
+    next_page = request.args.get(
+        'next-page',
+    )
     return render_template('login.html', title='Login', next_page=next_page)
 
 

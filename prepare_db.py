@@ -47,7 +47,7 @@ for tabela_nome in TABLES:
         cursor.execute(tabela_sql)
     except (
         psycopg.Error
-    ) as err: 
+    ) as err:
         print(err)
     else:
         print('OK')
@@ -62,7 +62,7 @@ cursor.executemany(usuario_sql, usuarios)
 
 cursor.execute(
     'SELECT username FROM usuarios'
-) 
+)
 print('\n-------------  Usuários Inseridos:  -------------')
 for user in cursor.fetchall():
     print(user[0])
