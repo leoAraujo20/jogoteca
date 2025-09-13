@@ -25,15 +25,15 @@
   <fieldset>
     <div class="form-group">
       <label for="nome">Nome</label>
-      <input type="text" id="nome" name="nome" class="form-control" value={{ game.nome if game else '' }} />
+      <input type="text" id="nome" name="nome" class="form-control" value="{{ game.nome if game else '' }}" />
     </div>
     <div class="form-group">
       <label for="categoria">Categoria</label>
-      <input type="text" id="categoria" name="categoria" class="form-control" value={{ game.categoria if game else '' }} />
+      <input type="text" id="categoria" name="categoria" class="form-control" value="{{ game.categoria if game else '' }}" />
     </div>
     <div class="form-group">
       <label for="console">Console</label>
-      <input type="text" id="console" name="console" class="form-control" value={{ game.console if game else '' }} />
+      <input type="text" id="console" name="console" class="form-control" value="{{ game.console if game else '' }}" />
     </div>
     <button type="submit" class="btn btn-primary btn-salvar">
         {{ 'Atualizar' if game else 'Cadastrar' }}
