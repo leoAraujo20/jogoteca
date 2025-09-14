@@ -40,8 +40,11 @@ def new_game():
             file.save(f'src/static/images/{new_game.id}.jpg')
         flash('Jogo cadastrado com sucesso!')
         return redirect(url_for('home'))
-    form = FormGame()
-    return render_template('form.html', title='Cadastrar Jogo', form=form)
+    return render_template(
+        'form.html',
+        title='Cadastrar Jogo',
+        form=FormGame()
+    )
 
 
 @app.route('/atualizar/<int:game_id>', methods=['GET', 'POST'])
@@ -50,9 +53,10 @@ def update_game(game_id):
         return redirect(f'/login?next-page=/atualizar/{game_id}')
     if request.method == 'POST':
         game = Jogos.query.get(game_id)
-        game.nome = request.form['nome']
-        game.categoria = request.form['categoria']
-        game.console = request.form['console']
+        form = FormGame(request.form)
+        game.nome = form.name.data
+        game.categoria = form.category.data
+        game.console = form.console.data
         db.session.commit()
         db.session.refresh(game)
         file = request.files['imagem']
@@ -68,6 +72,7 @@ def update_game(game_id):
         title='Atualizar Jogo',
         game=game,
         game_cover=game_cover,
+        form=FormGame(),
     )
 
 
