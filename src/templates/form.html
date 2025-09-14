@@ -11,10 +11,10 @@
   {% endif %}
 {% endwith %}
 
-<form class="formularioJogo" method="POST" action={{ url_for('update_game', game_id=game.id) if game else url_for('new_game') }} enctype="multipart/form-data">
+<form class="formularioJogo" method="POST" action={{ url_for('views.update_game', game_id=game.id) if game else url_for('views.new_game') }} enctype="multipart/form-data">
   {{ form.csrf_token }}
   <figure class="img thumbnail col-md-4 formularioImagem">
-    <img class="img-fluid" src="{{ url_for('image', filename=game_cover) }}" alt="Imagem da capa do jogo">
+    <img class="img-fluid" src="{{ url_for('views.image', filename=game_cover) }}" alt="Imagem da capa do jogo">
     <figcaption>
       <label class="fileContainer">
         Mudar Capa
@@ -37,7 +37,7 @@
     </div>
     <div class="form-group buttons">
       <input type="submit" value="Enviar" class="btn btn-primary" />
-      <a href="{{ url_for('home') }}" class="btn btn-danger">Voltar</a>
+      <a href="{{ url_for('views.home') }}" class="btn btn-danger">Voltar</a>
     </div>
   </fieldset>
 </form>

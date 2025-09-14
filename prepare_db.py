@@ -4,6 +4,8 @@ import psycopg
 from dotenv import load_dotenv
 from psycopg import OperationalError
 
+from src.extension import bcrypt
+
 load_dotenv()
 
 print('Conectando ao banco de dados PostgreSQL com psycopg v3...')
@@ -37,7 +39,7 @@ TABLES['Usuarios'] = """
       CREATE TABLE IF NOT EXISTS usuarios (
       id SERIAL PRIMARY KEY,
       username VARCHAR(50) UNIQUE NOT NULL,
-      senha VARCHAR(100) NOT NULL
+      senha VARCHAR(250) NOT NULL
       );"""
 
 for tabela_nome in TABLES:
@@ -54,9 +56,8 @@ for tabela_nome in TABLES:
 
 usuario_sql = 'INSERT INTO usuarios (username, senha) VALUES (%s, %s)'
 usuarios = [
-    ('BD', 'alohomora'),
-    ('Mila', 'paozinho'),
-    ('Cake', 'python_eh_vida'),
+    ('admin', bcrypt.generate_password_hash('admin').decode('utf-8')),
+    ('leonidas', bcrypt.generate_password_hash('12345').decode('utf-8')),
 ]
 cursor.executemany(usuario_sql, usuarios)
 

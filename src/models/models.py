@@ -1,4 +1,4 @@
-from main import db
+from ..extension import db
 
 
 class Jogos(db.Model):

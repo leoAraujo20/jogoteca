@@ -1,25 +1,31 @@
+import os
+
 from flask import (
+    Blueprint,
     flash,
     redirect,
     render_template,
     request,
+    send_from_directory,
     session,
     url_for,
 )
 
-from forms.forms import FormGame, FormUser
-from helpers.helpers import remove_image, return_image
-from main import app, db
-from models.models import Jogos, Usuarios
+from ..extension import bcrypt, db
+from ..forms.forms import FormGame, FormUser
+from ..helpers.helpers import remove_image, return_image
+from ..models.models import Jogos, Usuarios
+
+bp = Blueprint('views', __name__)
 
 
-@app.route('/')
+@bp.route('/')
 def home():
     game_list = Jogos.query.order_by(Jogos.id).all()
     return render_template('index.html', title='Jogos', game_list=game_list)
 
 
-@app.route('/novo-jogo', methods=['GET', 'POST'])
+@bp.route('/novo-jogo', methods=['GET', 'POST'])
 def new_game():
     if 'usuario_logado' not in session or session['usuario_logado'] is None:
         return redirect('/login?next-page=/novo-jogo')
@@ -35,7 +41,7 @@ def new_game():
         game_db = Jogos.query.filter_by(nome=name).first()
         if game_db:
             flash('Jogo já cadastrado!')
-            return redirect(url_for('new_game'))
+            return redirect(url_for('views.new_game'))
         new_game = Jogos(nome=name, categoria=category, console=console)
         db.session.add(new_game)
         db.session.commit()
@@ -43,13 +49,13 @@ def new_game():
         if file:
             file.save(f'src/static/images/{new_game.id}.jpg')
         flash('Jogo cadastrado com sucesso!')
-        return redirect(url_for('home'))
+        return redirect(url_for('views.home'))
     return render_template(
         'form.html', title='Cadastrar Jogo', form=FormGame()
     )
 
 
-@app.route('/atualizar/<int:game_id>', methods=['GET', 'POST'])
+@bp.route('/atualizar/<int:game_id>', methods=['GET', 'POST'])
 def update_game(game_id):
     if 'usuario_logado' not in session or session['usuario_logado'] is None:
         return redirect(f'/login?next-page=/atualizar/{game_id}')
@@ -76,7 +82,7 @@ def update_game(game_id):
             remove_image(game.id)
             file.save(f'src/static/images/{game.id}.jpg')
         flash('Jogo atualizado com sucesso!')
-        return redirect(url_for('home'))
+        return redirect(url_for('views.home'))
     game = Jogos.query.get(game_id)
     game_cover = return_image(game.id)
     return render_template(
@@ -88,7 +94,7 @@ def update_game(game_id):
     )
 
 
-@app.route('/deletar/<int:game_id>')
+@bp.route('/deletar/<int:game_id>')
 def delete_game(game_id):
     if 'usuario_logado' not in session or session['usuario_logado'] is None:
         return redirect(f'/login?next-page=/deletar/{game_id}')
@@ -96,15 +102,17 @@ def delete_game(game_id):
     db.session.delete(game)
     db.session.commit()
     flash('Jogo deletado com sucesso!')
-    return redirect(url_for('home'))
+    return redirect(url_for('views.home'))
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         form = FormUser(request.form)
         user_db = Usuarios.query.filter_by(username=form.username.data).first()
-        if user_db and user_db.senha == form.password.data:
+        if user_db and bcrypt.check_password_hash(
+            user_db.senha, form.password.data
+        ):
             session['usuario_logado'] = user_db.username
             flash(user_db.username + ' logado com sucesso!')
             next_page = request.form.get(
@@ -112,7 +120,7 @@ def login():
             )
             return redirect(next_page)
         flash('Usuário ou senha inválidos!')
-        return redirect(url_for('home'))
+        return redirect(url_for('views.home'))
     next_page = request.args.get(
         'next-page',
     )
@@ -121,13 +129,19 @@ def login():
     )
 
 
-@app.route('/logout')
+@bp.route('/logout')
 def logout():
     session.pop('usuario_logado', None)
     flash('Usuário deslogado com sucesso!')
-    return redirect(url_for('login'))
+    return redirect(url_for('views.login'))
 
 
-@app.route('/image/<filename>')
+@bp.route('/image/<filename>')
 def image(filename):
-    return app.send_static_file(f'images/{filename}')
+    print(f'Serving image: {filename}')
+    print(f'__file__: {__file__}')
+    images_dir = os.path.join(
+        os.path.dirname(__file__), '..', 'static', 'images'
+    )
+    print(f'Images directory: {images_dir}')
+    return send_from_directory(images_dir, filename)
