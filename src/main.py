@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from flask import Flask
+from flask_wtf import CSRFProtect
 
 from extension import db
 
@@ -11,6 +12,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 db.init_app(app)
+csrf = CSRFProtect(app)
 
 # evitar importação circular
 from views.views import *  # noqa: E402, F403

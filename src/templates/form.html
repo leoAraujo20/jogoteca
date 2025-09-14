@@ -12,7 +12,7 @@
 {% endwith %}
 
 <form method="POST" action={{ url_for('update_game', game_id=game.id) if game else url_for('new_game') }} enctype="multipart/form-data">
-  
+  {{ form.csrf_token }}
   <figure class="img thumbnail col-md-4">
     <img class="img-fluid" src="{{ url_for('image', filename=game_cover) }}" alt="Imagem da capa do jogo">
     <figcaption>
@@ -24,20 +24,21 @@
   </figure>
   <fieldset>
     <div class="form-group">
-      <label for="nome">Nome</label>
-      <input type="text" id="nome" name="nome" class="form-control" value="{{ game.nome if game else '' }}" />
+      {{ form.name.label }}
+      {{ form.name(class="form-control") }}
     </div>
     <div class="form-group">
-      <label for="categoria">Categoria</label>
-      <input type="text" id="categoria" name="categoria" class="form-control" value="{{ game.categoria if game else '' }}" />
+      {{ form.category.label }}
+      {{ form.category(class="form-control") }}
     </div>
     <div class="form-group">
-      <label for="console">Console</label>
-      <input type="text" id="console" name="console" class="form-control" value="{{ game.console if game else '' }}" />
+      {{ form.console.label }}
+      {{ form.console(class="form-control") }}
     </div>
-    <button type="submit" class="btn btn-primary btn-salvar">
-        {{ 'Atualizar' if game else 'Cadastrar' }}
-    </button>
+    <div class="form-group">
+      <input type="submit" value="Enviar" class="btn btn-primary" />
+      <a href="{{ url_for('home') }}" class="btn btn-danger">Voltar</a>
+    </div>
   </fieldset>
 </form>
 

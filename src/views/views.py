@@ -7,6 +7,7 @@ from flask import (
     url_for,
 )
 
+from forms.forms import FormGame
 from helpers.helpers import remove_image, return_image
 from main import app, db
 from models.models import Jogos, Usuarios
@@ -23,9 +24,10 @@ def new_game():
     if 'usuario_logado' not in session or session['usuario_logado'] is None:
         return redirect('/login?next-page=/novo-jogo')
     if request.method == 'POST':
-        name = request.form['nome']
-        category = request.form['categoria']
-        console = request.form['console']
+        form = FormGame(request.form)
+        name = form.name.data
+        category = form.category.data
+        console = form.console.data
         game_db = Jogos.query.filter_by(nome=name).first()
         if game_db:
             flash('Jogo já cadastrado!')
@@ -38,7 +40,8 @@ def new_game():
             file.save(f'src/static/images/{new_game.id}.jpg')
         flash('Jogo cadastrado com sucesso!')
         return redirect(url_for('home'))
-    return render_template('form.html', title='Cadastrar Jogo')
+    form = FormGame()
+    return render_template('form.html', title='Cadastrar Jogo', form=form)
 
 
 @app.route('/atualizar/<int:game_id>', methods=['GET', 'POST'])
