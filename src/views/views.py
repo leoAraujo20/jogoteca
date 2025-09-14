@@ -25,6 +25,10 @@ def new_game():
         return redirect('/login?next-page=/novo-jogo')
     if request.method == 'POST':
         form = FormGame(request.form)
+        if not form.validate_on_submit():
+            return render_template(
+                'form.html', title='Cadastrar Jogo', form=form
+            )
         name = form.name.data
         category = form.category.data
         console = form.console.data
@@ -50,8 +54,18 @@ def update_game(game_id):
     if 'usuario_logado' not in session or session['usuario_logado'] is None:
         return redirect(f'/login?next-page=/atualizar/{game_id}')
     if request.method == 'POST':
-        game = Jogos.query.get(game_id)
         form = FormGame(request.form)
+        if not form.validate_on_submit():
+            game = Jogos.query.get(game_id)
+            game_cover = return_image(game.id)
+            return render_template(
+                'form.html',
+                title='Atualizar Jogo',
+                game=game,
+                game_cover=game_cover,
+                form=form,
+            )
+        game = Jogos.query.get(game_id)
         game.nome = form.name.data
         game.categoria = form.category.data
         game.console = form.console.data
