@@ -7,7 +7,7 @@ from flask import (
     url_for,
 )
 
-from forms.forms import FormGame
+from forms.forms import FormGame, FormUser
 from helpers.helpers import remove_image, return_image
 from main import app, db
 from models.models import Jogos, Usuarios
@@ -41,9 +41,7 @@ def new_game():
         flash('Jogo cadastrado com sucesso!')
         return redirect(url_for('home'))
     return render_template(
-        'form.html',
-        title='Cadastrar Jogo',
-        form=FormGame()
+        'form.html', title='Cadastrar Jogo', form=FormGame()
     )
 
 
@@ -90,20 +88,23 @@ def delete_game(game_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        user_db = Usuarios.query.filter_by(
-            username=request.form['user']
-        ).first()
-        if user_db and user_db.senha == request.form['password']:
+        form = FormUser(request.form)
+        user_db = Usuarios.query.filter_by(username=form.username.data).first()
+        if user_db and user_db.senha == form.password.data:
             session['usuario_logado'] = user_db.username
             flash(user_db.username + ' logado com sucesso!')
-            next_page = request.form.get('next-page')
+            next_page = request.form.get(
+                'next-page',
+            )
             return redirect(next_page)
         flash('Usuário ou senha inválidos!')
         return redirect(url_for('home'))
     next_page = request.args.get(
         'next-page',
     )
-    return render_template('login.html', title='Login', next_page=next_page)
+    return render_template(
+        'login.html', title='Login', next_page=next_page, form=FormUser()
+    )
 
 
 @app.route('/logout')

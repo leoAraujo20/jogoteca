@@ -9,15 +9,16 @@
   {% endif %}
 {% endwith %}
 <form method="POST" action="{{url_for('login')}}">
+  {{ form.csrf_token }}
   <input type="hidden" name="next-page" value="{{ next_page or url_for('home') }}" />
-  <p>
-    <label>Nome de usuário:</label>
-    <input class="form-control" type="text" name="user" required />
-  </p>
-  <p>
-    <label>Senha:</label>
-    <input class="form-control" type="password" name="password" required />
-  </p>
+  <div class="form-group">
+    {{ form.username.label }}
+    {{ form.username(class="form-control") }}
+  </div>
+  <div class="form-group">
+    {{ form.password.label }}
+    {{ form.password(class="form-control") }}
+  </div>
   <p><button class="btn btn-primary" type="submit">Entrar</button></p>
 </form>
 {% endblock %}
