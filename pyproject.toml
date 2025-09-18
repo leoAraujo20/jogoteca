@@ -15,10 +15,6 @@ dependencies = [
     "flask-wtf (>=1.2.2,<2.0.0)"
 ]
 
-[tool.poetry]
-packages = [{include = "jogoteca", from = "src"}]
-
-
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.12.10"
 taskipy = "^1.14.1"
